@@ -3,6 +3,7 @@ var vm = new Vue({
   data: {
     productList: [],
     totalMoney: 0,
+    isCheckAll: false,
   },
   mounted: function() {
     // 由于使用mounted钩子无法保证实例已经被插入文档, 因此我们需要在钩子函数中包含$nextTick
@@ -24,6 +25,39 @@ var vm = new Vue({
         this.totalMoney = res.data.result.totalMoney;
       });
     },
+    changeMoney: function(product,isMinus) {
+      if(isMinus) {
+        if(product.productQuantity == 1) {
+          return
+        }
+        product.productQuantity--;
+      }else {
+        product.productQuantity++;
+      }
+    },
+    selectProduct: function(product) {
+      if(typeof(product.checked) == 'undefined') {
+        // 对于没有在data属性中声明&不存在与对象中的变量,Vue无法监控该属性.
+        // 在这种情况下, 我们可以:
+        // 1. 全局注册
+        // Vue.set(product, "checked", true);
+        // 2. 局部注册
+        this.$set(product, "checked", true)
+      }else {
+        product.checked = !product.checked;
+      }
+    },
+    checkAllProduct: function(flag) {
+      this.isCheckAll = flag
+      var _this = this;
+      this.productList.forEach(function(value,index) {
+        if(typeof(value.checked) == 'undefined') {
+          _this.$set(value, "checked", _this.isCheckAll);
+        }else {
+          value.checked = _this.isCheckAll;
+        }
+      });
+    }
   },
 })
 
