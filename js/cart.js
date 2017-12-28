@@ -5,10 +5,16 @@ var vm = new Vue({
     totalMoney: 0,
   },
   mounted: function() {
-    this.cartView();
+    // 由于使用mounted钩子无法保证实例已经被插入文档, 因此我们需要在钩子函数中包含$nextTick
+    this.$nextTick(function() {
+      this.cartView();
+    });
   },
+  // 局部过滤器
   filters: {
-
+    formatMoney: function(value) {
+      return "￥" + value.toFixed(2);
+    }
   },
   methods: {
     cartView: function() {
@@ -19,4 +25,9 @@ var vm = new Vue({
       });
     },
   },
+})
+
+// 全局过滤器, 我们可以将所有的全局过滤器放置到一个单独的filter.js中进行组织
+Vue.filter("formatMoneyWithUnit", function(value,type) {
+  return "￥" + value.toFixed(2) + type;
 })
