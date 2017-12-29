@@ -3,7 +3,10 @@ var vm = new Vue({
   data: {
     productList: [],
     totalMoney: 0,
+    totalPrice: 0,
     isCheckAll: false,
+    delFlag: false,
+    curDelProduct: '',
   },
   mounted: function() {
     // 由于使用mounted钩子无法保证实例已经被插入文档, 因此我们需要在钩子函数中包含$nextTick
@@ -34,6 +37,7 @@ var vm = new Vue({
       }else {
         product.productQuantity++;
       }
+      this.calTotalPrice();
     },
     selectProduct: function(product) {
       if(typeof(product.checked) == 'undefined') {
@@ -46,6 +50,7 @@ var vm = new Vue({
       }else {
         product.checked = !product.checked;
       }
+      this.calTotalPrice();
     },
     checkAllProduct: function(flag) {
       this.isCheckAll = flag
@@ -56,7 +61,28 @@ var vm = new Vue({
         }else {
           value.checked = _this.isCheckAll;
         }
-      });
+      })
+      this.calTotalPrice();
+    },
+    calTotalPrice: function() {
+      var _this = this;
+      this.totalPrice = 0;
+      this.productList.forEach(function(item, index) {
+        if(item.checked) {
+          _this.totalPrice += item.productPrice * item.productQuantity;
+        }
+      })
+    },
+    delConfirm: function(item) {
+      this.delFlag = true;
+      this.curDelProduct = item;
+    },
+    delProduct: function() {
+      var index = this.productList.indexOf(this.curDelProduct);
+      // 实际环境此处还应该调用后台接口进行删除
+      this.productList.splice(index, 1);
+      this.delFlag = false;
+      this.calTotalPrice();
     }
   },
 })
