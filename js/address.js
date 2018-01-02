@@ -3,6 +3,8 @@ new Vue({
   data: {
     addressList: [],
     limitAddressNum: 3,
+    currentIndex: 0,
+    shippingMethod: 1,
   },
   mounted: function() {
     this.$nextTick(function() {
@@ -22,6 +24,15 @@ new Vue({
       this.$http.get("data/address.json").then(function(res) {
         _this.addressList = res.data.result;
       });
-    }
+    },
+    setDefault: function(addressId) {
+      this.addressList.forEach(function(address, index) {
+        if(address.addressId==addressId) {
+          address.isDefault = true;
+        }else {
+          address.isDefault = false;
+        }
+      })
+    },
   },
 })
